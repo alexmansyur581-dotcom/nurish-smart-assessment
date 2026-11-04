@@ -1,0 +1,240 @@
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type Timestamp = int;
+type StudentQuestion = 
+ record {
+   id: Id;
+   kind: QuestionKind;
+   number: nat;
+   optionA: opt text;
+   optionB: opt text;
+   optionC: opt text;
+   optionD: opt text;
+   "text": text;
+   weight: nat;
+ };
+type StudentIdentity = 
+ record {
+   className: text;
+   educationLevel: EducationLevel;
+   fullName: text;
+   participantId: text;
+   schoolName: text;
+ };
+type Result__1 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
+ };
+type QuestionKind = 
+ variant {
+   essay;
+   multipleChoice;
+   shortAnswer;
+   trueFalse;
+ };
+type Question = 
+ record {
+   answerKey: text;
+   assessmentId: Id;
+   id: Id;
+   kind: QuestionKind;
+   number: nat;
+   optionA: opt text;
+   optionB: opt text;
+   optionC: opt text;
+   optionD: opt text;
+   "text": text;
+   weight: nat;
+ };
+type MentorView = 
+ record {
+   createdAt: Timestamp;
+   displayName: text;
+   email: text;
+   id: Id;
+   isActive: bool;
+ };
+type Id = nat;
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type EducationLevel = 
+ variant {
+   sdMi;
+   smpMts;
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+type AttemptStatus = 
+ variant {
+   awaitingReview;
+   graded;
+   inProgress;
+ };
+type AttemptResult = 
+ record {
+   assessmentId: Id;
+   attemptId: Id;
+   correctCount: nat;
+   finalScore: nat;
+   manualScore: nat;
+   mentorNote: opt text;
+   objectiveScore: nat;
+   status: AttemptStatus;
+   student: StudentIdentity;
+   submittedAt: opt Timestamp;
+   totalQuestions: nat;
+   unansweredCount: nat;
+   wrongCount: nat;
+ };
+type Attempt = 
+ record {
+   answers: vec Answer;
+   assessmentId: Id;
+   attemptNumber: nat;
+   id: Id;
+   mentorNote: opt text;
+   owner: principal;
+   startedAt: Timestamp;
+   status: AttemptStatus;
+   student: StudentIdentity;
+   submittedAt: opt Timestamp;
+ };
+type AssessmentView = 
+ record {
+   allowedAttempts: nat;
+   className: text;
+   createdAt: Timestamp;
+   educationLevel: EducationLevel;
+   id: Id;
+   material: text;
+   owner: principal;
+   shareToken: text;
+   status: AssessmentStatus;
+   subject: text;
+   title: text;
+ };
+type AssessmentStatus = 
+ variant {
+   closed;
+   draft;
+   published;
+ };
+type Answer = 
+ record {
+   awardedScore: opt nat;
+   mentorComment: opt text;
+   questionId: Id;
+   response: text;
+ };
+service : {
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result__1);
+  _internet_identity_sign_in_start: () -> (blob);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  /// Close an assessment (admin or owning mentor).
+  closeAssessment: (id: Id) -> (opt AssessmentView);
+  /// Create a new draft assessment owned by the caller.
+  createAssessment: (title: text, educationLevel: EducationLevel, className:
+   text, subject: text, material: text, allowedAttempts: nat) ->
+   (AssessmentView);
+  /// Create a mentor account (admin only).
+  createMentor: (email: text, password: text, displayName: text) ->
+   (MentorView);
+  /// Delete an assessment and its questions (admin or owning mentor).
+  deleteAssessment: (id: Id) -> (bool);
+  /// Delete a mentor account (admin only).
+  deleteMentor: (id: Id) -> (bool);
+  execute: (qJson: text) -> (Result) query;
+  /// Attach a mentor note and finalize grading.
+  finalizeAttempt: (attemptId: Id, mentorNote: opt text) -> (opt Attempt);
+  getApiDoc: () -> (text) query;
+  /// Read an assessment and its questions by share token (student access).
+  /// The returned questions never include the answer key.
+  getAssessmentByToken: (token: text) ->
+   (opt record {
+          AssessmentView;
+          vec StudentQuestion;
+        }) query;
+  /// Read the result summary for a graded attempt.
+  getAttemptResult: (attemptId: Id) -> (opt AttemptResult) query;
+  /// Return the mentor account bound to the caller, if any.
+  getCallerMentor: () -> (opt MentorView) query;
+  getCallerUserRole: () -> (UserRole) query;
+  /// Grade a manual answer (short answer or essay).
+  gradeAnswer: (attemptId: Id, questionId: Id, awardedScore: nat, comment:
+   opt text) -> (opt Attempt);
+  /// Report whether the caller has already unlocked the application.
+  isAppUnlocked: () -> (bool) query;
+  isCallerAdmin: () -> (bool) query;
+  /// List assessments visible to the caller: admins see all, mentors their own.
+  listAssessments: () -> (vec AssessmentView) query;
+  /// List attempts for an assessment (admin or owning mentor).
+  listAttempts: (assessmentId: Id) -> (vec Attempt) query;
+  /// List every mentor account (admin only).
+  listMentors: () -> (vec MentorView) query;
+  /// Sign in a mentor with email and password.
+  mentorLogin: (email: text, password: text) -> (opt MentorView);
+  /// Publish an assessment and return its share token (admin or owning mentor).
+  publishAssessment: (id: Id) -> (opt text);
+  /// Save a single answer for an in-progress attempt.
+  saveAnswer: (attemptId: Id, questionId: Id, response: text) ->
+   (opt Attempt);
+  schema: () -> (text) query;
+  /// Activate or deactivate a mentor account (admin only).
+  setMentorActive: (id: Id, isActive: bool) -> (opt MentorView);
+  /// Start or resume an attempt for a student identity via share token.
+  startAttempt: (token: text, student: StudentIdentity) -> (opt Attempt);
+  /// Submit an attempt and auto-grade objective questions.
+  submitAttempt: (attemptId: Id) -> (opt Attempt);
+  /// Verify the shared application password and open the gate for the caller.
+  unlockApp: (password: text) -> (bool);
+  /// Update an assessment's metadata (admin or owning mentor).
+  updateAssessment: (id: Id, title: text, educationLevel: EducationLevel,
+   className: text, subject: text, material: text, allowedAttempts: nat) ->
+   (opt AssessmentView);
+  /// Upload and validate questions for an assessment. Stores nothing when any
+  /// row is invalid; traps with the per-row failures instead.
+  uploadQuestions: (assessmentId: Id, parsed: vec Question) -> (nat);
+}

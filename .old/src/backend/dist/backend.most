@@ -1,0 +1,211 @@
+// Version: 4.0.0
+type AccessControlState__201339279 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__230067015<Principal, UserRole__91647283>
+  };
+type Answer__701125594 =
+  {
+    awardedScore : ?Nat;
+    mentorComment : ?Text;
+    questionId : Id__389469852;
+    response : Text
+  };
+type Answer__958693206 =
+  {
+    awardedScore : ?Nat;
+    mentorComment : ?Text;
+    questionId : Nat;
+    response : Text
+  };
+type AssessmentStatus__640516822 = {#closed; #draft; #published};
+type Assessment__694782832 =
+  {
+    allowedAttempts : Nat;
+    className : Text;
+    createdAt : Int;
+    educationLevel : {#sdMi; #smpMts};
+    id : Nat;
+    material : Text;
+    owner : Principal;
+    shareToken : Text;
+    status : {#closed; #draft; #published};
+    subject : Text;
+    title : Text
+  };
+type Assessment__923493124 =
+  {
+    allowedAttempts : Nat;
+    className : Text;
+    createdAt : Timestamp__301639476;
+    educationLevel : EducationLevel__206589503;
+    id : Id__389469852;
+    material : Text;
+    owner : Principal;
+    shareToken : Text;
+    status : AssessmentStatus__640516822;
+    subject : Text;
+    title : Text
+  };
+type AttemptStatus__868230089 = {#awaitingReview; #graded; #inProgress};
+type Attempt__433778072 =
+  {
+    answers : [Answer__701125594];
+    assessmentId : Id__389469852;
+    attemptNumber : Nat;
+    id : Id__389469852;
+    mentorNote : ?Text;
+    owner : Principal;
+    startedAt : Timestamp__301639476;
+    status : AttemptStatus__868230089;
+    student : StudentIdentity__677677698;
+    submittedAt : ?Timestamp__301639476
+  };
+type Attempt__835021382 =
+  {
+    answers : [Answer__958693206];
+    assessmentId : Nat;
+    attemptNumber : Nat;
+    id : Nat;
+    mentorNote : ?Text;
+    owner : Principal;
+    startedAt : Int;
+    status : {#awaitingReview; #graded; #inProgress};
+    student :
+      {
+        className : Text;
+        educationLevel : {#sdMi; #smpMts};
+        fullName : Text;
+        participantId : Text;
+        schoolName : Text
+      };
+    submittedAt : ?Int
+  };
+type Data__44217153<K, V> = {var count : Nat__227979830; kvs : [var ?(K, V)]};
+type EducationLevel__206589503 = {#sdMi; #smpMts};
+type Id__389469852 = Nat;
+type Internal__283199666<K, V> =
+  {children : [var ?Node__204828119<K, V>]; data : Data__44217153<K, V>};
+type Leaf__598469445<K, V> = {data : Data__44217153<K, V>};
+type Map__230067015<K, V> = Map__405889023<K, V>;
+type Map__405889023<K, V> = Map__603270868<K, V>;
+type Map__603270868<K, V> =
+  {var root : Node__204828119<K, V>; var size : Nat__227979830};
+type MentorAccount__300655313 =
+  {
+    createdAt : Int;
+    displayName : Text;
+    email : Text;
+    id : Nat;
+    isActive : Bool;
+    passwordHash : Text
+  };
+type MentorAccount__652565696 =
+  {
+    createdAt : Timestamp__301639476;
+    displayName : Text;
+    email : Text;
+    id : Id__389469852;
+    isActive : Bool;
+    passwordHash : Text
+  };
+type Nat__227979830 = Nat__920180692;
+type Nat__920180692 = Nat;
+type NewActor__769816496 =
+  {
+    accessControlState : AccessControlState__201339279;
+    assessments : Map__230067015<Nat, Assessment__694782832>;
+    attempts : Map__230067015<Nat, Attempt__835021382>;
+    mentorBindings : Map__230067015<Principal, Nat>;
+    mentors : Map__230067015<Nat, MentorAccount__300655313>;
+    nextAssessmentId : {var value : Nat};
+    nextAttemptId : {var value : Nat};
+    nextMentorId : {var value : Nat};
+    nextQuestionId : {var value : Nat};
+    questions : Map__230067015<Nat, Question__654151036>;
+    unlockedSessions : Map__230067015<Principal, Bool>
+  };
+type Node__204828119<K, V> =
+  {#internal : Internal__283199666<K, V>; #leaf : Leaf__598469445<K, V>};
+type OldActor__512397517 = {};
+type QuestionKind__829700786 =
+  {#essay; #multipleChoice; #shortAnswer; #trueFalse};
+type Question__654151036 =
+  {
+    answerKey : Text;
+    assessmentId : Nat;
+    id : Nat;
+    kind : {#essay; #multipleChoice; #shortAnswer; #trueFalse};
+    number : Nat;
+    optionA : ?Text;
+    optionB : ?Text;
+    optionC : ?Text;
+    optionD : ?Text;
+    text : Text;
+    weight : Nat
+  };
+type Question__684439017 =
+  {
+    answerKey : Text;
+    assessmentId : Id__389469852;
+    id : Id__389469852;
+    kind : QuestionKind__829700786;
+    number : Nat;
+    optionA : ?Text;
+    optionB : ?Text;
+    optionC : ?Text;
+    optionD : ?Text;
+    text : Text;
+    weight : Nat
+  };
+type StudentIdentity__677677698 =
+  {
+    className : Text;
+    educationLevel : EducationLevel__206589503;
+    fullName : Text;
+    participantId : Text;
+    schoolName : Text
+  };
+type Timestamp__301639476 = Int;
+type UserRole__91647283 = {#admin; #guest; #user};
+{
+  "00000000_000000" : OldActor__512397517 -> NewActor__769816496
+}
+actor  {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__230067015<Principal, UserRole__91647283>
+    };
+  stable assessments :
+    {
+      var root : Node__204828119<Id__389469852, Assessment__923493124>;
+      var size : Nat__227979830
+    };
+  stable attempts :
+    {
+      var root : Node__204828119<Id__389469852, Attempt__433778072>;
+      var size : Nat__227979830
+    };
+  stable mentorBindings :
+    {
+      var root : Node__204828119<Principal, Id__389469852>;
+      var size : Nat__227979830
+    };
+  stable mentors :
+    {
+      var root : Node__204828119<Id__389469852, MentorAccount__652565696>;
+      var size : Nat__227979830
+    };
+  stable nextAssessmentId : {var value : Id__389469852};
+  stable nextAttemptId : {var value : Id__389469852};
+  stable nextMentorId : {var value : Id__389469852};
+  stable nextQuestionId : {var value : Id__389469852};
+  stable questions :
+    {
+      var root : Node__204828119<Id__389469852, Question__684439017>;
+      var size : Nat__227979830
+    };
+  stable unlockedSessions :
+    {var root : Node__204828119<Principal, Bool>; var size : Nat__227979830}
+};

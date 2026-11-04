@@ -1,0 +1,28 @@
+{
+  "overview": "NURISH SMART adalah platform asesmen untuk membuat soal, mengerjakan asesmen, memeriksa jawaban, dan menyajikan laporan nilai siswa SD/MI dan SMP/MTs.",
+  "features": [
+    "Gerbang password umum sebelum mengakses aplikasi",
+    "Login admin dan mentor dengan hak akses berbeda",
+    "Dashboard dengan daftar asesmen dan statusnya",
+    "Membuat asesmen dengan unggah soal dari file Excel dan template yang dapat diunduh",
+    "Pratinjau dan validasi soal sebelum asesmen diterbitkan",
+    "Tautan asesmen unik yang dapat dibagikan kepada siswa",
+    "Halaman siswa tanpa akun dengan pengisian identitas",
+    "Pengerjaan soal dengan navigasi, penanda jawaban, dan progres",
+    "Penyimpanan jawaban otomatis dan pemulihan setelah muat ulang",
+    "Penilaian otomatis pilihan ganda dan Benar/Salah",
+    "Pemeriksaan manual isian singkat dan esai dengan komentar",
+    "Perhitungan nilai akhir dan status pengerjaan",
+    "Laporan hasil asesmen dalam format PDF A4",
+    "Kelola akun mentor oleh admin"
+  ],
+  "category": "education",
+  "tags": [
+    "education",
+    "assessment",
+    "quiz",
+    "school",
+    "reporting"
+  ],
+  "last_updated": "2026-11-04T08:00:52.685Z"
+}
